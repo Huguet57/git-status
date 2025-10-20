@@ -1,6 +1,6 @@
 # Repo status for zsh
 
-Note: this is a fork of @ezorita's amazing repository. Needed it in zsh.
+Note: this is a fork of [@ezorita's](https://github.com/ezorita/git-prompt) amazing repository. Needed it in zsh.
 
 With `repo-status` you'll _hopefully_ never find yourself again in the following **gruesome** situations:
 - Resolving merge conflicts manually because you forgot to `pull` your branch.
