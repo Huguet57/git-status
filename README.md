@@ -1,4 +1,4 @@
-# A git prompt for bash
+# A git prompt for zsh
 
 With `git-prompt` you'll _hopefully_ never find yourself again in the following **gruesome** situations:
 - Resolving merge conflicts manually because you forgot to `pull` your branch.
@@ -6,15 +6,10 @@ With `git-prompt` you'll _hopefully_ never find yourself again in the following 
 
 ## Install
 Easy to install, just two simple steps:
-#### Linux
-```bash
+#### Linux & MacOS
+```zsh
 git clone -q https://github.com/ezorita/git-prompt
-printf "\nsource $(pwd)/git-prompt/git-prompt" >> ~/.bashrc
-```
-#### MacOS
-```bash
-git clone -q https://github.com/ezorita/git-prompt
-printf "\nsource $(pwd)/git-prompt/git-prompt" >> ~/.bash_profile
+printf "\nsource $(pwd)/git-prompt/git-prompt" >> ~/.zshrc
 ```
 
 ## Features
@@ -57,9 +52,9 @@ Type `GIT_PROMPT=0` or `gitpr` and _voilà_, you're back to your default prompt.
 
 ![](https://i.imgur.com/I46F2Lu.gif)
 
-Here is the alias definition, add it to your bash options file:
+Here is the alias definition, add it to your zsh options file:
 
-```bash
+```zsh
 alias gitpr='GIT_PROMPT=$((1-{$GIT_PROMPT}))'
 ```
 
@@ -69,7 +64,7 @@ Just set the environment variables.
 ![](https://i.imgur.com/Rfed9Wh.gif)
 
 ## Options
-Options can be set directly in the terminal or, if you want to set them permanently, define them anywhere in your `.bashrc` or `.bash_profile` file:
+Options can be set directly in the terminal or, if you want to set them permanently, define them anywhere in your `.zshrc` file:
 
 Parameter                     | Description
 ----------------------------- | --------------------------------------

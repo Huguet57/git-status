@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
 # MIT License
 
@@ -23,27 +23,27 @@
 # SOFTWARE.
 
 # Color codes.
-Color_Off="\[\033[0m\]"
+Color_Off="%{$reset_color%}"
 
 # Regular colors
-Black="\[\033[0;35m\]"
-Red="\[\033[0;31m\]"
-Green="\[\033[0;32m\]"
-Yellow="\[\033[0;33m\]"
-Blue="\[\033[0;34m\]"
-Purple="\[\033[0;35m\]"
-Cyan="\[\033[0;36m\]"
-White="\[\033[0;37m\]"
+Black="%{$fg[magenta]%}"
+Red="%{$fg[red]%}"
+Green="%{$fg[green]%}"
+Yellow="%{$fg[yellow]%}"
+Blue="%{$fg[blue]%}"
+Purple="%{$fg[magenta]%}"
+Cyan="%{$fg[cyan]%}"
+White="%{$fg[white]%}"
 
 # Bold colors
-BBlack="\[\033[1;35m\]"
-BRed="\[\033[1;31m\]"
-BGreen="\[\033[1;32m\]"
-BYellow="\[\033[1;33m\]"
-BBlue="\[\033[1;34m\]"
-BPurple="\[\033[1;35m\]"
-BCyan="\[\033[1;36m\]"
-BWhite="\[\033[1;37m\]"
+BBlack="%{$fg_bold[magenta]%}"
+BRed="%{$fg_bold[red]%}"
+BGreen="%{$fg_bold[green]%}"
+BYellow="%{$fg_bold[yellow]%}"
+BBlue="%{$fg_bold[blue]%}"
+BPurple="%{$fg_bold[magenta]%}"
+BCyan="%{$fg_bold[cyan]%}"
+BWhite="%{$fg_bold[white]%}"
 
 # Color parameters
 User_color=${User_color:-$BGreen}
@@ -63,23 +63,21 @@ Prompt_error_color=${Prompt_error_color:-$BRed}
 # Prompt parameters
 Force_Default_Prompt=${Force_Default_Prompt:-1}
 
+# Load colors module
+autoload -U colors && colors
+
 # Append __git_prompt() to prompt commands
 GIT_INSTALLED=$(which git)
-if [[ $GIT_INSTALLED ]]; then
-    if [[ $PROMPT_COMMAND == "" ]]; then
-	if [[ $PS1 == "" || $Force_Default_Prompt == 1 ]]; then
-	    export PROMPT_COMMAND="__set_exit_code;__default_prompt;__git_prompt"
-	else
-	    DEFAULT_PS1=${PS1}
-	    export PROMPT_COMMAND="__set_exit_code;__git_prompt"
-	fi
-    elif ! [[ $PROMPT_COMMAND =~ git_prompt ]]; then
-	if [[ $Force_Default_Prompt == 1 ]]; then
-	    export PROMPT_COMMAND="__set_exit_code;$PROMPT_COMMAND;__default_prompt;__git_prompt"
-	else
-	    export PROMPT_COMMAND="__set_exit_code;$PROMPT_COMMAND;__git_prompt"
-	fi
+if [[ -n $GIT_INSTALLED ]]; then
+    # Add precmd hook for git prompt
+    autoload -Uz add-zsh-hook
+    add-zsh-hook precmd __set_exit_code
+
+    if [[ $Force_Default_Prompt == 1 ]]; then
+        add-zsh-hook precmd __default_prompt
     fi
+
+    add-zsh-hook precmd __git_prompt
 fi
 
 # Default parameters
@@ -104,11 +102,10 @@ __git_prompt() {
 	local GIT_BRANCH=$(git rev-parse --abbrev-ref --symbolic-full-name @ 2>&1)
 
 	if [[ "$GIT_BRANCH" =~ "ot a git repository" ]]; then
-	    if [[ ${PROMPT_COMMAND} == "__git_prompt" ]]; then
-		PS1=${DEFAULT_PS1}
-	    fi
+	    # Not in a git repository
+	    PS1=${DEFAULT_PS1}
 	else
-		if [[ $GIT_SSH_AGENT_STORED == 0 && ! -z $SSH_CONNECTION ]]; then
+		if [[ $GIT_SSH_AGENT_STORED == 0 && -n $SSH_CONNECTION ]]; then
 			echo "Unlock ssh key to automatically fetch changes:"
 			eval `ssh-agent` > /dev/null
 			ssh-add -q $GIT_SSH_PRIVATE_KEY
@@ -142,19 +139,22 @@ __git_prompt() {
 	    fi
 
 	    # Sync only if there is an upstream branch defined.
-	    if [[ $GIT_UPSTREAM != "" ]]; then
+	    if [[ -n $GIT_UPSTREAM ]]; then
 
 		if [[ $GIT_AUTOFETCH == 1 ]]; then
 
 		    # Trigger autofetch every GIT_AUTOFETCH_INTERVAL since last fetch/pull.
 		    if [[ $AUTOFETCH == 0 ]]; then
-			
+
 			# Get last fetch time from last_modified(.git/FETCH_HEAD)
-			local LAST_FETCH_OUT=$(stat -c "%Y %s" $GIT_ROOT/.git/FETCH_HEAD 2>&1)
-			if [[ "$LAST_FETCH_OUT" =~ ^([0-9]+)\ ([0-9]+)$ ]]; then
+			# BSD/macOS stat syntax
+			local LAST_FETCH_TIME=$(stat -f "%m" $GIT_ROOT/.git/FETCH_HEAD 2>&1)
+			local LAST_FETCH_SIZE=$(stat -f "%z" $GIT_ROOT/.git/FETCH_HEAD 2>&1)
+
+			if [[ "$LAST_FETCH_TIME" =~ ^[0-9]+$ ]] && [[ "$LAST_FETCH_SIZE" =~ ^[0-9]+$ ]]; then
 			    # File size is 0 If last fetch did not work (probably offline).
-			    if [[ ${BASH_REMATCH[2]} != "0" ]]; then
-				GIT_LAST_FETCH=${BASH_REMATCH[1]}
+			    if [[ $LAST_FETCH_SIZE != 0 ]]; then
+				GIT_LAST_FETCH=$LAST_FETCH_TIME
 				GIT_ONLINE=1
 			    else
 				GIT_ONLINE=0
@@ -163,11 +163,11 @@ __git_prompt() {
 
 			# Compare it with current time
 			local CUR_TIME=$(date '+%s')
-			if [[ $GIT_LAST_FETCH == "" ]] || [[ $(($CUR_TIME - $GIT_LAST_FETCH)) -gt $GIT_AUTOFETCH_INTERVAL ]]; then
+			if [[ -z $GIT_LAST_FETCH ]] || [[ $(($CUR_TIME - $GIT_LAST_FETCH)) -gt $GIT_AUTOFETCH_INTERVAL ]]; then
 			    AUTOFETCH=1
 			fi
 		    fi
-		    
+
 		    # Autofetch.
 		    if [[ $AUTOFETCH == 1 ]]; then
 			# Notify in prompt.
@@ -201,7 +201,7 @@ __git_prompt() {
 		fi
 
 		# If not available or not connected, show broken connection symbol.
-		if [[ $SYNC_INFO_AVAILABLE == 0 ]] || [ $GIT_ONLINE == 0 ]; then
+		if [[ $SYNC_INFO_AVAILABLE == 0 ]] || [[ $GIT_ONLINE == 0 ]]; then
 		    GIT_STATUS_STRING+="${At_color}(${Color_off}${NoSync_color}҂${Color_Off}${At_color})${Color_Off}"
 		fi
 
@@ -210,68 +210,68 @@ __git_prompt() {
 		    local GIT_AHEAD=""
 		    local GIT_BEHIND=""
 		    if [[ "$GIT_NEWSTATUS" =~ ^([0-9]+) ]]; then
-			if [[ "${BASH_REMATCH[1]}" != "0" ]]; then
-			    GIT_AHEAD="${Ahead_color}${BASH_REMATCH[1]}↑${Color_Off}"
+			if [[ "${match[1]}" != "0" ]]; then
+			    GIT_AHEAD="${Ahead_color}${match[1]}↑${Color_Off}"
 			fi
 		    fi
 		    if [[ "$GIT_NEWSTATUS" =~ ([0-9]+)$ ]]; then
-			if [[ "${BASH_REMATCH[1]}" != "0" ]]; then
-			    GIT_BEHIND="${Behind_color}${BASH_REMATCH[1]}↓${Color_Off}"
+			if [[ "${match[1]}" != "0" ]]; then
+			    GIT_BEHIND="${Behind_color}${match[1]}↓${Color_Off}"
 			fi
 		    fi
 
-		    if [ "$GIT_AHEAD" != "" ]  && [ "$GIT_BEHIND" != "" ]; then
-			GIT_STATUS_STRING+="${At_color}(${Color_off}"${GIT_AHEAD}" "${GIT_BEHIND}"${At_color})${Color_Off}"
-		    elif [ "$GIT_AHEAD" != "" ]; then
-			GIT_STATUS_STRING+="${At_color}(${Color_off}"${GIT_AHEAD}"${At_color})${Color_Off}"
-		    elif [ "$GIT_BEHIND" != "" ]; then
-			GIT_STATUS_STRING+="${At_color}(${Color_off}"${GIT_BEHIND}"${At_color})${Color_Off}"
+		    if [[ -n $GIT_AHEAD ]] && [[ -n $GIT_BEHIND ]]; then
+			GIT_STATUS_STRING+="${At_color}(${Color_off}${GIT_AHEAD} ${GIT_BEHIND}${At_color})${Color_Off}"
+		    elif [[ -n $GIT_AHEAD ]]; then
+			GIT_STATUS_STRING+="${At_color}(${Color_off}${GIT_AHEAD}${At_color})${Color_Off}"
+		    elif [[ -n $GIT_BEHIND ]]; then
+			GIT_STATUS_STRING+="${At_color}(${Color_off}${GIT_BEHIND}${At_color})${Color_Off}"
 		    fi
 		fi
 	    fi
 
 	    # Get path relative to repository root
 	    if [[ "$GIT_ROOT" =~ .*/([^/]+)$ ]]; then
-		local GIT_REPO_NAME=${BASH_REMATCH[1]}
+		local GIT_REPO_NAME=${match[1]}
 	    fi
 	    GIT_PATH=$GIT_REPO_NAME
 	    if [[ $(pwd -P) =~ ${GIT_ROOT}(.*$) ]]; then
-		GIT_PATH+=${BASH_REMATCH[1]}
+		GIT_PATH+=${match[1]}
 	    fi
 
 	    # Prompt git branch.
-	    PS1+="${Branch_color}$GIT_BRANCH${Color_Off}"
+	    PS1="${Branch_color}$GIT_BRANCH${Color_Off}"
 
 	    # Prompt sync status.
-	    if [[ $GIT_UPSTREAM != "" ]]; then
+	    if [[ -n $GIT_UPSTREAM ]]; then
 		PS1+="${GIT_STATUS_STRING}"
 	    else
 		PS1+="${At_color}(local)${Color_Off}"
 	    fi
 
-	    
+
 	    # Prompt host and git repository path.
-	    PS1+="${At_color}@${Color_Off}${Host_color}\h${Color_Off}${Git_color}:g~${Color_Off}${Path_color}${GIT_PATH}${Color_Off}"
+	    PS1+="${At_color}@${Color_Off}${Host_color}%m${Color_Off}${Git_color}:g~${Color_Off}${Path_color}${GIT_PATH}${Color_Off}"
 
 	    if [[ $LAST_EXIT_CODE != 0 ]]; then
-		PS1+="${Prompt_error_color}\$${Color_Off} "
+		PS1+="${Prompt_error_color}%#${Color_Off} "
 	    else
-		PS1+="${Prompt_color}\$${Color_Off} "
+		PS1+="${Prompt_color}%#${Color_Off} "
 	    fi
        fi
-	
-    elif [[ ${PROMPT_COMMAND} == "__git_prompt" ]]; then
+
+    else
 	PS1=${DEFAULT_PS1}
     fi
 
 }
 
 __default_prompt() {
-    PS1="${User_color}\u${At_color}@${Host_color}\h${Colon_color}:${Path_color}\w${Color_Off}"
+    PS1="${User_color}%n${At_color}@${Host_color}%m${Colon_color}:${Path_color}%~${Color_Off}"
 
     if [[ $LAST_EXIT_CODE != 0 ]]; then
-	PS1+="${Prompt_error_color}\$${Color_Off} "
+	PS1+="${Prompt_error_color}%#${Color_Off} "
     else
-	PS1+="${Prompt_color}\$${Color_Off} "
+	PS1+="${Prompt_color}%#${Color_Off} "
     fi
 }
