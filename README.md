@@ -1,4 +1,4 @@
-# A git prompt for zsh
+# Git status for zsh
 
 Note: this is a fork of @ezorita's amazing repository. Needed it in zsh.
 
@@ -91,7 +91,7 @@ Parameter                     | Description
 **Behind_color**              | Color of the commits behind indicator [default _Red_]
 **NoSync_color**              | Color of the out-of-sync symbol [default _Red_]
 **Fetch_color**               | Color of the `fetch...` message (do not escape with `\[...\]`) [default `\033[0;32m`]
-**Git_color**                 | Color of the git prompt indicator `:g~` [default _White_]
+**Git_color**                 | Color of the git status indicator `:g~` [default _White_]
 **Prompt_color**              | Color of the prompt `$` [default _White_]
 **Prompt_error_color**        | Color of the prompt `$` when the last command failed [default _Bold Red_]
 
