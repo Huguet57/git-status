@@ -1,8 +1,8 @@
-# Git status for zsh
+# Repo status for zsh
 
 Note: this is a fork of @ezorita's amazing repository. Needed it in zsh.
 
-With `git-status` you'll _hopefully_ never find yourself again in the following **gruesome** situations:
+With `repo-status` you'll _hopefully_ never find yourself again in the following **gruesome** situations:
 - Resolving merge conflicts manually because you forgot to `pull` your branch.
 - or even worse, `commiting` and `pushing` to the wrong branch :scream:
 
@@ -10,8 +10,8 @@ With `git-status` you'll _hopefully_ never find yourself again in the following 
 Easy to install, just two simple steps:
 #### Linux & MacOS
 ```zsh
-git clone -q https://github.com/Huguet57/git-status
-printf "\nsource $(pwd)/git-status/git-status" >> ~/.zshrc
+git clone -q https://github.com/Huguet57/repo-status
+printf "\nsource $(pwd)/repo-status/repo-status" >> ~/.zshrc
 ```
 
 ## Features
@@ -70,7 +70,7 @@ Options can be set directly in the terminal or, if you want to set them permanen
 
 Parameter                     | Description
 ----------------------------- | --------------------------------------
-**GIT_PROMPT**                | Enables/disables `git-status` (values `1`/`0`) [default `1`]
+**GIT_PROMPT**                | Enables/disables `repo-status` (values `1`/`0`) [default `1`]
 **GIT_AUTOFECTH**             | Enables/disables autofecth (values`1`/`0`) [default `1`]
 **GIT_AUTOFECTH_INTERVAL**    | Autofetch interval (in seconds) [default `600`]
 **Force_Default_Prompt**      | Overwrite the default prompt as well (values `1`/`0`) [default `0`]
@@ -91,7 +91,7 @@ Parameter                     | Description
 **Behind_color**              | Color of the commits behind indicator [default _Red_]
 **NoSync_color**              | Color of the out-of-sync symbol [default _Red_]
 **Fetch_color**               | Color of the `fetch...` message (do not escape with `\[...\]`) [default `\033[0;32m`]
-**Git_color**                 | Color of the git status indicator `:g~` [default _White_]
+**Git_color**                 | Color of the repo status indicator `:g~` [default _White_]
 **Prompt_color**              | Color of the prompt `$` [default _White_]
 **Prompt_error_color**        | Color of the prompt `$` when the last command failed [default _Bold Red_]
 
@@ -99,6 +99,6 @@ Parameter                     | Description
 `git v1.9.1`
 
 ## Issues and bugs
-Feel free to [open a new issue](https://github.com/Huguet57/git-status/issues/new) if you find a bug or have feature suggestions.
+Feel free to [open a new issue](https://github.com/Huguet57/repo-status/issues/new) if you find a bug or have feature suggestions.
 
 Thanks!
