@@ -1,5 +1,7 @@
 # A git prompt for zsh
 
+Note: this is a fork of @ezorita's amazing repository. Needed it in zsh.
+
 With `git-prompt` you'll _hopefully_ never find yourself again in the following **gruesome** situations:
 - Resolving merge conflicts manually because you forgot to `pull` your branch.
 - or even worse, `commiting` and `pushing` to the wrong branch :scream:
