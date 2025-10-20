@@ -2,7 +2,7 @@
 
 Note: this is a fork of @ezorita's amazing repository. Needed it in zsh.
 
-With `git-prompt` you'll _hopefully_ never find yourself again in the following **gruesome** situations:
+With `git-status` you'll _hopefully_ never find yourself again in the following **gruesome** situations:
 - Resolving merge conflicts manually because you forgot to `pull` your branch.
 - or even worse, `commiting` and `pushing` to the wrong branch :scream:
 
@@ -10,8 +10,8 @@ With `git-prompt` you'll _hopefully_ never find yourself again in the following 
 Easy to install, just two simple steps:
 #### Linux & MacOS
 ```zsh
-git clone -q https://github.com/ezorita/git-prompt
-printf "\nsource $(pwd)/git-prompt/git-prompt" >> ~/.zshrc
+git clone -q https://github.com/Huguet57/git-status
+printf "\nsource $(pwd)/git-status/git-status" >> ~/.zshrc
 ```
 
 ## Features
@@ -70,7 +70,7 @@ Options can be set directly in the terminal or, if you want to set them permanen
 
 Parameter                     | Description
 ----------------------------- | --------------------------------------
-**GIT_PROMPT**                | Enables/disables `git-prompt` (values `1`/`0`) [default `1`]
+**GIT_PROMPT**                | Enables/disables `git-status` (values `1`/`0`) [default `1`]
 **GIT_AUTOFECTH**             | Enables/disables autofecth (values`1`/`0`) [default `1`]
 **GIT_AUTOFECTH_INTERVAL**    | Autofetch interval (in seconds) [default `600`]
 **Force_Default_Prompt**      | Overwrite the default prompt as well (values `1`/`0`) [default `0`]
@@ -99,6 +99,6 @@ Parameter                     | Description
 `git v1.9.1`
 
 ## Issues and bugs
-Feel free to [open a new issue](https://github.com/ezorita/git-prompt/issues/new) if you find a bug or have feature suggestions.
+Feel free to [open a new issue](https://github.com/Huguet57/git-status/issues/new) if you find a bug or have feature suggestions.
 
 Thanks!
